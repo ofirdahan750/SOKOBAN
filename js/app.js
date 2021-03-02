@@ -202,7 +202,7 @@ function moveTo(i, j) {
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
 			renderCell(gGamerPos, GAMER_IMG);
 			stepLeft--
-			elBoneCollectedCounter.innerHTML = ` ${stepLeft}/100 step!`
+			elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
 			if(!stepLeft) gameOver('lose')
 		}
 

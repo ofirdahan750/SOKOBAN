@@ -42,7 +42,7 @@ function initGame(row, col) {
 	gGamerPos = { i: 2, j: 3 };
 	rows = row
 	cols = col
-	boneCounterLeft = 6
+	boneCounterLeft = 7
 	boneCollected = 0
 	stepLeft = 100
 
@@ -90,6 +90,7 @@ function buildBoard() {
 		board[7][4].gameElement = BONE;
 		board[7][5].gameElement = BONE;
 		board[7][6].gameElement = BONE;
+		board[6][9].gameElement = BONE;
 	}
 	board[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
 	return board;

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>SOKOBAN!</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="/favcon/download.png" sizes="16x16">
+</head>
+
+<body onkeyup="handleKey(event)" onload="initGame(10,12)">
+  <h1>SOKOBAN!</h1>
+  <h2>Help WOOFIY to bury all the bones! </h2>
+  <div class="btn-game-warper">
+  <form class="game-btn" onsubmit="startGame(event)">
+
+  <button>Start!</button>
+</form>
+</div>
+  <div class="bone-collected"></div>
+  <div class="bone-left"></div>
+  <div class="step-left"></div>
+  <table>
+    <tbody class="board"></tbody>
+  </table>
+  <div class="win-msg">You won! play again? <button onclick="initGame(10,12)">Rest game</button></div>
+  <script src="js/app.js"></script>
+  <script src="js/util.js"></script>
+</body>
+
+</html>

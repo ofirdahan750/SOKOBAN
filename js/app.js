@@ -186,13 +186,14 @@ function buildBoardAuto() {
 function undoLastMove() {
 	if (!undoMoveArr.length) return
 	isLastMove = true
-	gBoard = undoMoveArr.pop()
+	gBoard = undoMoveArr[undoMoveArr.length - 1]
+	renderBoard(gBoard)
+	undoMoveArr.splice(-1, 1)
 	gGamerPos.i = gamerLastPos[gamerLastPos.length - 1].i
 	gGamerPos.j = gamerLastPos[gamerLastPos.length - 1].j
 	gamerLastPos.splice(-1, 1)
 	stepLeft++
 	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
-	renderBoard(gBoard)
 }
 function spawnNewObject(board) {
 	if (glueLastPos && board[glueLastPos.i][glueLastPos.j].gameElement !== GAMER) {

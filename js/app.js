@@ -7,11 +7,18 @@ let glueInterval
 let gBoard;
 let gGamerPos;
 let glueLastPos
+let clockLastPos
 let stepLeft
+let lastPlayerPose
+let bounesStepCount
 
 
+
+let isBouneStep = false
+let isLastMove = false
 let isSticky = false
 let isGameOn = null
+let undoMoveArr = []
 
 const WALL = 'WALL';
 const FLOOR = 'FLOOR';
@@ -19,25 +26,27 @@ const BONE = 'BONE';
 const GAMER = 'GAMER';
 const GLUE = 'GLUE'
 const TARGET = 'TARGET'
+const WATER = 'WATER'
+const CLOCK = 'CLOCK'
 const elBoneLeftCounter = document.querySelector('.bone-left')
 const elBoneCollectedCounter = document.querySelector('.bone-collected')
-const elStepCounter= document.querySelector('.step-left')
+const elStepCounter = document.querySelector('.step-left')
 const elWinMsg = document.querySelector('.win-msg')
 const elSpawnSpeed = document.querySelector('select[name=bone-spawn-speed]');
 const elSpawnCount = document.querySelector('input[name=bone-spawn-count]');
 const elBtnGame = document.querySelector('.btn-game-warper')
+const elGameData = document.querySelector('.game-data-warper')
 
 const GAMER_IMG = '🐶';
 const BONE_IMG = '🦴';
 const GLUE_IMG = '😾'
+const CLOCK_IMG = '⏰'
 
 
 
 function initGame(row, col) {
 	elWinMsg.style.display = 'none'
-	elBoneCollectedCounter.style.display = 'none'
-	elBoneLeftCounter.style.display = 'none'
-	elStepCounter.style.display = 'none'
+	elGameData.style.display = 'none'
 	elBtnGame.style.display = 'block'
 	gGamerPos = { i: 2, j: 3 };
 	rows = row
@@ -53,12 +62,10 @@ function initGame(row, col) {
 function startGame(ev) {
 	ev.preventDefault()
 	elBtnGame.style.display = 'none'
-	elBoneCollectedCounter.style.display = 'flex'
-	elBoneLeftCounter.style.display = 'flex'
-	elStepCounter.style.display = 'flex'
+	elGameData.style.display = 'flex'
 	isGameOn = true
-	spawnNewGlue(gBoard)
-	glueInterval = setInterval(function () { spawnNewGlue(gBoard) }, 3000)
+	spawnNewObject(gBoard)
+	glueInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
 	elBoneCollectedCounter.innerHTML = `You have Collected ${boneCollected} bones!`
 	elBoneLeftCounter.innerHTML = `Only ${boneCounterLeft} left!`
 	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
@@ -82,6 +89,9 @@ function buildBoard() {
 				|| i === 7 && j === 10 || i === 6 && j === 7 || i === 8 && j === 7) {
 				cell.type = TARGET
 			}
+			if (i <= 4 && j === 7 && i >= 2 || i <= 7 && j === 3 && i >= 6) {
+				cell.type = WATER
+			}
 			board[i][j] = cell;
 		}
 		board[3][5].gameElement = BONE;
@@ -95,17 +105,31 @@ function buildBoard() {
 	board[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
 	return board;
 }
-
-function spawnNewGlue(board) {
-	if (glueLastPos && board[glueLastPos.i][glueLastPos.j].gameElement !== GAMER) {
+function undoLastMove() {
+	if (!undoMoveArr.length) return
+	isLastMove = true
+	lastPlayerPose = undoMoveArr[undoMoveArr.length - 1]
+	moveTo(lastPlayerPose.i, lastPlayerPose.j)
+	undoMoveArr.splice(-1, 2)
+}
+function spawnNewObject(board) {
+	if (glueLastPos && board[glueLastPos.i][glueLastPos.j].gameElement !== null) {
 		board[glueLastPos.i][glueLastPos.j].gameElement = null;
 		renderCell(glueLastPos, null)
 	}
-	var allEmptyCells = getEmptyCells(board)
-	var postionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
-	glueLastPos = postionRandom
-	board[postionRandom.i][postionRandom.j].gameElement = GLUE;
-	renderCell(postionRandom, GLUE_IMG)
+	if (clockLastPos && board[clockLastPos.i][clockLastPos.j].gameElement !== null) {
+		board[clockLastPos.i][clockLastPos.j].gameElement = null;
+		renderCell(clockLastPos, null)
+	}
+	let allEmptyCells = getEmptyCells(board)
+	let gluePostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	let clockPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	glueLastPos = gluePostionRandom
+	clockLastPos = clockPostionRandom
+	board[gluePostionRandom.i][gluePostionRandom.j].gameElement = GLUE;
+	board[clockLastPos.i][clockLastPos.j].gameElement = CLOCK;
+	renderCell(gluePostionRandom, GLUE_IMG)
+	renderCell(clockPostionRandom, CLOCK_IMG)
 }
 
 function getEmptyCells(board) {
@@ -156,6 +180,8 @@ function checkCurrCellType(currCell) {
 			return ' wall'
 		case TARGET:
 			return ' target'
+		case WATER:
+			return ' water'
 		default:
 			return ' floor'
 	}
@@ -173,7 +199,7 @@ function moveTo(i, j) {
 
 	if ((iAbsDiff === 1 && jAbsDiff === 0) || (jAbsDiff === 1 && iAbsDiff === 0)) {
 		if (targetCell.gameElement === GLUE) {
-			stepLeft -=5
+			stepLeft -= 5
 			targetCell.gameElement = GAMER
 			isSticky = true
 			setTimeout(function () { glueTimeOut(); }, 5000);
@@ -194,17 +220,35 @@ function moveTo(i, j) {
 				isAbleMove = false
 			}
 		}
+		if (targetCell.gameElement === CLOCK && !isBouneStep) {
+			isBouneStep = true
+			bounesStepCount = 10
+		}
 		if (isAbleMove) {
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = null;
 			renderCell(gGamerPos, '');
+			if (!isLastMove) {
+				let lastMovePos = { i: gGamerPos.i, j: gGamerPos.j }
+				undoMoveArr.push(lastMovePos)
+				isLastMove = false
+				console.log('undoMoveArr:', undoMoveArr)
+			}
 			gGamerPos.i = i;
 			gGamerPos.j = j;
-
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
 			renderCell(gGamerPos, GAMER_IMG);
+			if(!isBouneStep) {
 			stepLeft--
 			elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
-			if(!stepLeft) gameOver('lose')
+			}
+			else {
+				if(!bounesStepCount) {
+					isBouneStep = false
+				}
+				bounesStepCount--
+				elStepCounter.innerHTML = ` Bonues Step! ${bounesStepCount}/10 step!`
+			}
+			if (!stepLeft) gameOver('lose')
 		}
 
 	}

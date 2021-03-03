@@ -3,7 +3,12 @@ body {
     color: white;
 }
 
-div ,h1 ,h2 , button ,form , table{
+div,
+h1,
+h2,
+button,
+form,
+table {
     display: flex;
     justify-content: center;
 }
@@ -17,11 +22,12 @@ div ,h1 ,h2 , button ,form , table{
 form {
     flex-direction: column;
 }
-form > * {
+
+form>* {
     margin: auto;
 }
 
-form > input {
+form>input {
     width: 150px;
 }
 
@@ -32,19 +38,24 @@ form > input {
 }
 
 .floor {
-    background-color: gray
+    background-image: url("../img/grass.png");
+    opacity: 0.8;
 }
 
 .wall {
     background-image: url("../img/close.png");
 }
+.water {
+    background-image: url("https://i.pinimg.com/originals/48/42/41/4842415e5f93c69717a67668fd1fb85b.gif");
+}
+
 .target {
     display: table;
     border-spacing: 8.9px;
     position: relative;
-   }
-  
-  .target:before {
+}
+
+.target:before {
     display: table-cell;
     vertical-align: middle;
     height: 20px;
@@ -53,9 +64,9 @@ form > input {
     border-radius: 50%;
     content: "";
     position: absolute;
-  }
-  
-  .target:after {
+}
+
+.target:after {
     display: table-cell;
     vertical-align: middle;
     height: 10px;
@@ -66,11 +77,23 @@ form > input {
     position: absolute;
     left: 16.5px;
     top: 16.5px;
-  }
-  
+}
+
 
 
 
 .win-msg {
     display: none;
+}
+
+.game-data-warper {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.game-data-warper button {
+    width: 50px;
+    margin: 0;
+    margin: auto
 }

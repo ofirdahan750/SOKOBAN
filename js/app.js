@@ -17,7 +17,7 @@ let bounesStepCount
 
 
 let point = 0
-let isPasueGame = null
+let isPasueGame = false
 let isMagnetOn = false
 let isLastMove = false
 let isSticky = false
@@ -114,12 +114,13 @@ function pauseGame() {
 	if (isPasueGame) {
 		elPauseBtn.innerHTML = `Pause`
 		isPasueGame = false
-		clearInterval(objectInterval)
+		objectInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
+
+
 	} else {
 		elPauseBtn.innerHTML = `Continue`
 		isPasueGame = true
-		objectInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
-
+		clearInterval(objectInterval)
 	}
 }
 

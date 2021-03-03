@@ -140,10 +140,10 @@ function startGameAuto(ev) {
 
 }
 function buildBoardManually() {
-	var board = createMat(rows, cols)
-	for (var i = 0; i < board.length; i++) {
-		for (var j = 0; j < board[0].length; j++) {
-			var cell = { type: FLOOR, gameElement: null };
+	let board = createMat(rows, cols)
+	for (let i = 0; i < board.length; i++) {
+		for (let j = 0; j < board[0].length; j++) {
+			let cell = { type: FLOOR, gameElement: null };
 			board[i][j] = cell;
 		}
 	}
@@ -153,10 +153,10 @@ function buildBoardManually() {
 }
 
 function buildBoardAuto() {
-	var board = createMat(rows, cols)
-	for (var i = 0; i < board.length; i++) {
-		for (var j = 0; j < board[0].length; j++) {
-			var cell = { type: FLOOR, gameElement: null };
+	let board = createMat(rows, cols)
+	for (let i = 0; i < board.length; i++) {
+		for (let j = 0; j < board[0].length; j++) {
+			let cell = { type: FLOOR, gameElement: null };
 			if (j <= 10 && i === 0 && j >= 3 || i <= 6 && j === 10 || i === 6 &&
 				j === 11 || i >= 7 && j === board[0].length - 1 || i === board.length - 1
 				|| j + 9 === board.length - 1 && i >= 1 ||
@@ -214,10 +214,10 @@ function spawnNewObject(board) {
 		renderCell(goldLastPos, null)
 	}
 	let allEmptyCells = getEmptyCells(board)
-	let gluePostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
-	let clockPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
-	let magentPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
-	let goldPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	const gluePostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	const clockPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	const magentPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
+	const goldPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
 	glueLastPos = gluePostionRandom
 	board[gluePostionRandom.i][gluePostionRandom.j].gameElement = GLUE;
 	renderCell(gluePostionRandom, GLUE_IMG)
@@ -233,11 +233,11 @@ function spawnNewObject(board) {
 }
 
 function getEmptyCells(board) {
-	var allEmptyCell = []
+	let allEmptyCell = []
 	board.length
-	for (var i = 0; i < board.length; i++) {
-		for (var j = 0; j < board[i].length; j++) {
-			var currCell = board[i][j]
+	for (let i = 0; i < board.length; i++) {
+		for (let j = 0; j < board[i].length; j++) {
+			let currCell = board[i][j]
 			if (currCell.type === FLOOR && currCell.gameElement === null) {
 				allEmptyCell.push({ i: i, j: j })
 			}
@@ -249,12 +249,12 @@ function getEmptyCells(board) {
 
 function renderBoard(board) {
 
-	var strHTML = '';
-	for (var i = 0; i < board.length; i++) {
+	let strHTML = '';
+	for (let i = 0; i < board.length; i++) {
 		strHTML += '<tr>\n';
-		for (var j = 0; j < board[0].length; j++) {
-			var currCell = board[i][j];
-			var cellClass = getClassName({ i: i, j: j })
+		for (let j = 0; j < board[0].length; j++) {
+			let currCell = board[i][j];
+			let cellClass = getClassName({ i: i, j: j })
 			cellClass += checkCurrCellType(currCell.type)
 			strHTML += '\t<td class="cell ' + cellClass +
 				'"  onclick="moveTo(' + i + ',' + j + ')" >\n';
@@ -270,7 +270,7 @@ function renderBoard(board) {
 	}
 
 
-	var elBoard = document.querySelector('.board');
+	const elBoard = document.querySelector('.board');
 	elBoard.innerHTML = strHTML;
 
 }
@@ -291,13 +291,13 @@ function checkCurrCellType(currCell) {
 
 function moveTo(i, j) {
 	if (!isGameOn || isSticky || isPasueGame) return
-	var targetCell = gBoard[i][j];
+	const targetCell = gBoard[i][j];
 	if (targetCell.type === WALL || targetCell.type === TARGET && targetCell.gameElement === BONE) return;
-	let diffI = i - gGamerPos.i
-	let diffJ = j - gGamerPos.j
+	const diffI = i - gGamerPos.i
+	const diffJ = j - gGamerPos.j
 	let isAbleMove = true
-	var iAbsDiff = Math.abs(i - gGamerPos.i);
-	var jAbsDiff = Math.abs(j - gGamerPos.j);
+	const iAbsDiff = Math.abs(i - gGamerPos.i);
+	const jAbsDiff = Math.abs(j - gGamerPos.j);
 
 	if ((iAbsDiff === 1 && jAbsDiff === 0) || (jAbsDiff === 1 && iAbsDiff === 0)) {
 		if (targetCell.gameElement === GLUE) {
@@ -319,8 +319,12 @@ function moveTo(i, j) {
 					if (!boneCounterLeft) gameOver('win')
 				}
 				if (gBoard[loc.i][loc.j].type === WATER) {
+					let lastLocation = {i:i,j:j}
+					console.log('loc:', lastLocation)
+					targetCell.gameElement = null
 					gBoard[loc.i][loc.j].gameElement = null
-					renderCell(loc, null);
+					renderCell(loc, '');
+					renderCell(lastLocation, '');
 					let afterWaterSlide = { i: loc.i, j: loc.j }
 					while (gBoard[afterWaterSlide.i][afterWaterSlide.j].type === WATER) {
 						afterWaterSlide.i++
@@ -381,9 +385,9 @@ function moveTo(i, j) {
 
 function activeMagnet() {
 	let boneNearArr = []
-	for (var i = gGamerPos.i - 1; i <= gGamerPos.i + 1; i++) {
+	for (let i = gGamerPos.i - 1; i <= gGamerPos.i + 1; i++) {
 		if (i < 0 || i >= gBoard.length) continue
-		for (var j = gGamerPos.j - 1; j <= gGamerPos.j + 1; j++) {
+		for (let j = gGamerPos.j - 1; j <= gGamerPos.j + 1; j++) {
 			if (i === gGamerPos.i && j === gGamerPos.j || j < 0 || j >= gBoard[0].length ||
 				i === gGamerPos.i - 1 && j === gGamerPos.j - 1 || i === gGamerPos.i - 1 && j === gGamerPos.j + 1 ||
 				i === gGamerPos.i - 1 && j === gGamerPos.j + 1 || i === gGamerPos.i + 1 && j === gGamerPos.j + 1 ||
@@ -434,16 +438,16 @@ function gameOver(msg) {
 }
 
 function renderCell(location, value) {
-	var cellSelector = '.' + getClassName(location)
-	var elCell = document.querySelector(cellSelector);
+	const cellSelector = '.' + getClassName(location)
+	const elCell = document.querySelector(cellSelector);
 	elCell.innerHTML = value;
 }
 
 
 function handleKey(event) {
 
-	var i = gGamerPos.i;
-	var j = gGamerPos.j;
+	const i = gGamerPos.i;
+	const j = gGamerPos.j;
 
 
 	switch (event.key) {
@@ -465,7 +469,7 @@ function handleKey(event) {
 }
 
 function getClassName(location) {
-	var cellClass = 'cell-' + location.i + '-' + location.j;
+	const cellClass = 'cell-' + location.i + '-' + location.j;
 	return cellClass;
 }
 

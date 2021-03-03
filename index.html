@@ -12,23 +12,31 @@
   <h1>SOKOBAN!</h1>
   <h2>Help WOOFIY to bury all the bones! </h2>
   <div class="btn-game-warper">
-  <form class="game-btn" onsubmit="startGame(event)">
+    <button class="game-btn" onclick="startGameAuto(event)">Start</button>
+    <button class="game-btn" onclick="startGameManually(event)">Build your own borad</button>
+  </div>
 
-  <button>Start!</button>
-</form>
-</div>
-<div class="game-data-warper">
-  <div class="bone-collected"></div>
-  <div class="bone-left"></div>
-  <div class="step-left"></div>
-  <button onclick="undoLastMove()">UNDO!</button>
-</div>
-  <table>
-    <tbody class="board"></tbody>
-  </table>
-  <div class="win-msg">You won! play again? <button onclick="initGame(10,12)">Rest game</button></div>
-  <script src="js/app.js"></script>
-  <script src="js/util.js"></script>
+    <div class="game-data-warper">
+      <div class="point">Point:0</div>
+      <div class="bone-collected"></div>
+      <div class="bone-left"></div>
+      <div class="step-left"></div>
+      <button onclick="undoLastMove()">UNDO!</button>
+      <button onclick="initGame(10,12)">Reset game</button>
+      <button class="magent" onclick="activeMagnet()">🧲</button>
+      <button class="pause-game-btn" onclick="pauseGame()"></button>
+    </div>
+    <div class="btn-manual-game">
+      <img src="https://i.pinimg.com/originals/48/42/41/4842415e5f93c69717a67668fd1fb85b.gif" />
+      <img src="./img/Fill-Drit.jpg" />
+      <img src="./img/dog-bone.png" />
+    </div>
+    <table>
+      <tbody class="board"></tbody>
+    </table>
+    <div class="win-msg">You won! play again? <button onclick="initGame(10,12)">Reset game</button></div>
+    <script src="js/app.js"></script>
+    <script src="js/util.js"></script>
 </body>
 
 </html>

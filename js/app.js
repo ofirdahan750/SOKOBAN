@@ -73,6 +73,9 @@ function initGame(row, col) {
 	boneCounterLeft = 7
 	boneCollected = 0
 	stepLeft = 100
+	point = 0
+	undoMoveArr = []
+	gamerLastPos = []
 	gBoard = buildBoardAuto();
 	renderBoard(gBoard);
 	toggleTargetClass()
@@ -184,9 +187,9 @@ function undoLastMove() {
 	if (!undoMoveArr.length) return
 	isLastMove = true
 	gBoard = undoMoveArr.pop()
-	gGamerPos.i = gamerLastPos[gamerLastPos.length-1].i
-	gGamerPos.j = gamerLastPos[gamerLastPos.length-1].j
-	gamerLastPos.splice(-1,1)
+	gGamerPos.i = gamerLastPos[gamerLastPos.length - 1].i
+	gGamerPos.j = gamerLastPos[gamerLastPos.length - 1].j
+	gamerLastPos.splice(-1, 1)
 	stepLeft++
 	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
 	renderBoard(gBoard)
@@ -351,7 +354,7 @@ function moveTo(i, j) {
 			}
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = null;
 			renderCell(gGamerPos, '');
-			let lastPos = {i:gGamerPos.i, j:gGamerPos.j}
+			let lastPos = { i: gGamerPos.i, j: gGamerPos.j }
 			gamerLastPos.push(lastPos)
 			gGamerPos.i = i;
 			gGamerPos.j = j;

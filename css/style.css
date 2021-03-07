@@ -9,12 +9,19 @@
         opacity: 1;
     }
 }
+
+
 button{
     cursor: pointer;
 }
 body {
-    background-color: black;
-    color: white;
+    background-image: url("../img/book-794978.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    color: rgba(5, 4, 4, 0.664);
+    font-family: 'DotGothic16', sans-serif;
+    font-weight: bolder;
+
 }
 
 div,
@@ -25,13 +32,22 @@ form,
 table {
     display: flex;
     justify-content: center;
+    border-collapse: collapse;
+    /* border: 1px solid black; */
 }
+
+.board {
+    border: 1px solid black;
+}
+
 
 .cell {
     width: 40px;
     height: 40px;
     text-align: center;
-    cursor: pointer
+    cursor: pointer;
+    border: 1px solid black;
+   
 }
 
 form {
@@ -50,12 +66,14 @@ form {
 
 .floor {
     background-image: url("../img/grass.png");
-    opacity: 0.8;
 }
 
 .wall {
     background-image: url("../img/close.png");
+   /* width: auto; */
+    background-color: rgba(0, 0, 0, 0.459);
 }
+
 .water {
     background-image: url("https://i.pinimg.com/originals/48/42/41/4842415e5f93c69717a67668fd1fb85b.gif");
 }
@@ -70,6 +88,11 @@ form {
     animation-iteration-count: infinite;
 
 }
+.road {
+    background-image: url("../img/road-1303617_640.jpg");
+}
+    
+
 
 .btn-manual-game {
     display: flex;
@@ -103,6 +126,5 @@ form {
 }
 .btn-deactivate {
     background-color: rgb(255, 0, 0);
-    opacity: 0.5;
     cursor: not-allowed
 }

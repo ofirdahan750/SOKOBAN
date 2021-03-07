@@ -157,8 +157,8 @@ function buildBoardAuto() {
 	for (let i = 0; i < board.length; i++) {
 		for (let j = 0; j < board[0].length; j++) {
 			let cell = { type: FLOOR, gameElement: null };
-			if (j <= 10 && i === 0 && j >= 3 || i <= 6 && j === 10 || i === 6 &&
-				j === 11 || i >= 7 && j === board[0].length - 1 || i === board.length - 1
+			if (i === 0 || i <= 6 && j === 10 || i === 6 &&
+				j === 11 ||  j === board[0].length - 1 || i === board.length - 1
 				|| j + 9 === board.length - 1 && i >= 1 ||
 				j <= 3 && i === 1 && j >= 0 || j <= 3 && i === 3 && j >= 1
 				|| j <= 4 && i === 4 && j >= 1 ||
@@ -314,6 +314,7 @@ function moveTo(i, j) {
 				if (gBoard[loc.i][loc.j].type === TARGET) {
 					boneCounterLeft -= 1
 					boneCollected += 1
+					
 					elBoneLeftCounter.innerHTML = `Only ${boneCounterLeft} left!`
 					elBoneCollectedCounter.innerHTML = `You have Collected ${boneCollected} bones!`
 					if (!boneCounterLeft) gameOver('win')
@@ -355,18 +356,19 @@ function moveTo(i, j) {
 		}
 		if (isAbleMove) {
 			if (!isLastMove) {
+				let lastPos = { i: gGamerPos.i, j: gGamerPos.j }
+				gamerLastPos.push(lastPos)
 				undoMoveArr.push(JSON.parse(JSON.stringify(gBoard)))
 				isLastMove = false
 			}
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = null;
 			renderCell(gGamerPos, '');
-			let lastPos = { i: gGamerPos.i, j: gGamerPos.j }
-			gamerLastPos.push(lastPos)
+
 			gGamerPos.i = i;
 			gGamerPos.j = j;
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
 			renderCell(gGamerPos, GAMER_IMG);
-
+			
 			if (!bounesStepCount) {
 				stepLeft--
 				elStepCounter.innerHTML = ` ${stepLeft}/100 step!`

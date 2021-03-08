@@ -16,8 +16,8 @@ button{
 }
 body {
     background-image: url("../img/book-794978.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
+    background-position: top;
+    background-repeat: repeat-y;
     color: rgba(5, 4, 4, 0.664);
     font-family: 'DotGothic16', sans-serif;
     font-weight: bolder;

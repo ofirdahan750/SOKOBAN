@@ -14,14 +14,15 @@ let goldLastPos
 let stepLeft
 let lastPlayerPose
 let bounesStepCount
+let magentBonePos
 
 
 let point = 0
 let isPasueGame = false
 let isMagnetOn = false
-let isLastMove = false
 let isSticky = false
 let isGameOn = null
+let isBoneMagent = null
 let undoMoveArr = []
 let gamerLastPos = []
 
@@ -78,17 +79,17 @@ function initGame(row, col) {
 	boneCollected = 0
 	stepLeft = 100
 	point = 0
+	isGameOn = false
+	isBoneMagent = false
 	elPoint.innerHTML = `Point:${point}`
 	undoMoveArr = []
 	gamerLastPos = []
-	gBoard = buildBoardAuto();
+	gBoard = buildBoard();
 	renderBoard(gBoard);
 	toggleTargetClass()
 	toggleMagentClass()
 	
 }
-
-
 
 function toggleMagentClass() {
 	if (isMagnetOn) {
@@ -119,7 +120,7 @@ function pauseGame() {
 	if (isPasueGame) {
 		elPauseBtn.innerHTML = `Pause`
 		isPasueGame = false
-		objectInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
+		objectInterval = setInterval(function () { spawnNewObjects(gBoard) }, 3000)
 
 
 	} else {
@@ -138,8 +139,8 @@ function startGame(ev) {
 	elStatsWarper.style.display = 'flex'
 	isGameOn = true
 	bounesStepCount = 0
-	spawnNewObject(gBoard)
-	objectInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
+	spawnNewObjects()
+	objectInterval = setInterval(function () { spawnNewObjects(gBoard) }, 3000)
 	elBoneCollectedCounter.innerHTML = `You have Collected ${boneCollected} bones!`
 	elBoneLeftCounter.innerHTML = `Only ${boneCounterLeft} left!`
 	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
@@ -162,7 +163,7 @@ function buildBoardManually() {
 	return board;
 }
 
-function buildBoardAuto() {
+function buildBoard() {
 	let board = createMat(rows, cols)
 	for (let i = 0; i < board.length; i++) {
 		for (let j = 0; j < board[0].length; j++) {
@@ -194,51 +195,36 @@ function buildBoardAuto() {
 
 	return board;
 }
-function undoLastMove() {
-	if (!undoMoveArr.length) return
-	isLastMove = true
-	gBoard = undoMoveArr[undoMoveArr.length - 1]
-	renderBoard(gBoard)
-	undoMoveArr.splice(-1, 1)
-	gGamerPos.i = gamerLastPos[gamerLastPos.length - 1].i
-	gGamerPos.j = gamerLastPos[gamerLastPos.length - 1].j
-	gamerLastPos.splice(-1, 1)
-	stepLeft++
-	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
+
+
+
+function spawnNewObject(lastPos) {
+if(lastPos && gBoard[lastPos.i][lastPos.j].gameElement !== GAMER ) {
+	gBoard[lastPos.i][lastPos.j].gameElement = null
+	renderCell(lastPos, '')
 }
-function spawnNewObject(board) {
-	if (glueLastPos && board[glueLastPos.i][glueLastPos.j].gameElement !== GAMER) {
-		board[glueLastPos.i][glueLastPos.j].gameElement = null;
-		renderCell(glueLastPos, null)
-	}
-	if (clockLastPos && board[clockLastPos.i][clockLastPos.j].gameElement !== GAMER) {
-		board[clockLastPos.i][clockLastPos.j].gameElement = null;
-		renderCell(clockLastPos, null)
-	}
-	if (magentLastPos && board[magentLastPos.i][magentLastPos.j].gameElement !== GAMER) {
-		board[magentLastPos.i][magentLastPos.j].gameElement = null;
-		renderCell(magentLastPos, null)
-	}
-	if (goldLastPos && board[goldLastPos.i][goldLastPos.j].gameElement !== GAMER) {
-		board[goldLastPos.i][goldLastPos.j].gameElement = null;
-		renderCell(goldLastPos, null)
-	}
-	let allEmptyCells = getEmptyCells(board)
+}
+function spawnNewObjects() {
+	spawnNewObject(glueLastPos)
+	spawnNewObject(clockLastPos)
+	spawnNewObject(magentLastPos)
+	spawnNewObject(goldLastPos)
+	let allEmptyCells = getEmptyCells(gBoard)
 	const gluePostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
 	const clockPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
 	const magentPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
 	const goldPostionRandom = allEmptyCells[getRandomInt(0, allEmptyCells.length - 1)]
 	glueLastPos = gluePostionRandom
-	board[gluePostionRandom.i][gluePostionRandom.j].gameElement = GLUE;
+	gBoard[gluePostionRandom.i][gluePostionRandom.j].gameElement = GLUE;
 	renderCell(gluePostionRandom, GLUE_IMG)
 	clockLastPos = clockPostionRandom
-	board[clockLastPos.i][clockLastPos.j].gameElement = CLOCK;
+	gBoard[clockLastPos.i][clockLastPos.j].gameElement = CLOCK;
 	renderCell(clockPostionRandom, CLOCK_IMG)
 	magentLastPos = magentPostionRandom
-	board[magentLastPos.i][magentLastPos.j].gameElement = MAGENT;
+	gBoard[magentLastPos.i][magentLastPos.j].gameElement = MAGENT;
 	renderCell(magentPostionRandom, MAGENT_IMG)
 	goldLastPos = goldPostionRandom
-	board[goldLastPos.i][goldLastPos.j].gameElement = GOLD;
+	gBoard[goldLastPos.i][goldLastPos.j].gameElement = GOLD;
 	renderCell(goldPostionRandom, GOLD_IMG)
 }
 
@@ -365,15 +351,18 @@ function moveTo(i, j) {
 			toggleMagentClass()
 		}
 		if (isAbleMove) {
-			if (!isLastMove) {
-				let lastPos = { i: gGamerPos.i, j: gGamerPos.j }
-				gamerLastPos.push(lastPos)
-				undoMoveArr.push(JSON.parse(JSON.stringify(gBoard)))
-				isLastMove = false
+			if(isBoneMagent) {
+				gBoard[gGamerPos.i][gGamerPos.j].gameElement = BONE;
+				renderCell(gGamerPos, BONE_IMG);
+				gBoard[magentBonePos.i][magentBonePos.j].gameElement = null;
+				renderCell(magentBonePos, '');
+				
+				isBoneMagent = false
 			}
-			gBoard[gGamerPos.i][gGamerPos.j].gameElement = null;
-			renderCell(gGamerPos, '');
-
+			else {
+				gBoard[gGamerPos.i][gGamerPos.j].gameElement = null;
+				renderCell(gGamerPos, '');
+			}
 			gGamerPos.i = i;
 			gGamerPos.j = j;
 			gBoard[gGamerPos.i][gGamerPos.j].gameElement = GAMER;
@@ -392,8 +381,9 @@ function moveTo(i, j) {
 		}
 
 	}
-
 }
+
+
 
 function activeMagnet() {
 	let boneNearArr = []
@@ -406,14 +396,14 @@ function activeMagnet() {
 				i === gGamerPos.i + 1 && j === gGamerPos.j - 1) continue;
 
 			if (gBoard[i][j].gameElement === BONE) {
-				let currCell = { i: i, j: j }
+				magentBonePos = { i: i, j: j }
 				let elCell = document.querySelector(`.cell-${i}-${j}`)
 				console.log('elCell:', elCell)
 				elCell.classList.add('flash')
 				elCell.addEventListener("click", function () {
-					selectMagentCell(currCell);
+					selectMagentCell();
 				})
-				boneNearArr.push(currCell)
+				boneNearArr.push(magentBonePos)
 			}
 		}
 	}
@@ -423,16 +413,17 @@ function activeMagnet() {
 		clearInterval(objectInterval)
 	}
 }
-function selectMagentCell(currCell) {
+function selectMagentCell() {
 	elPauseBtn.disabled = false
 	isPasueGame = false
-	objectInterval = setInterval(function () { spawnNewObject(gBoard) }, 3000)
-	renderCell(currCell, MAGENT_BONE_IMG)
+	objectInterval = setInterval(function () { spawnNewObjects(gBoard) }, 3000)
+	renderCell(magentBonePos, MAGENT_BONE_IMG)
 	const elCell = document.querySelectorAll(".cell")
-	gBoard[currCell.i][currCell.j].gameElement = MAGENT_BONE
+	gBoard[magentBonePos.i][magentBonePos.j].gameElement = MAGENT_BONE
 	elCell.forEach(target =>
 		target.classList.remove('flash')
 	)
+	isBoneMagent = true
 	isMagnetOn = false
 	toggleMagentClass()
 }
@@ -446,7 +437,7 @@ function gameOver(msg) {
 	isGameOn = false
 	clearInterval(objectInterval)
 	elWinMsg.style.display = 'flex'
-	elWinMsg.innerHTML = `You ${msg}! play again? <button onclick="initGame(10,12)">Reset game</button>`
+	elWinMsg.innerHTML = `You ${msg}! play again?`
 }
 
 function renderCell(location, value) {
@@ -460,9 +451,10 @@ function handleKey(event) {
 
 	const i = gGamerPos.i;
 	const j = gGamerPos.j;
+	let currKey = (event.key) ?  event.key : event
 
 
-	switch (event.key) {
+	switch (currKey) {
 		case 'ArrowLeft':
 			moveTo(i, j - 1);
 			break;

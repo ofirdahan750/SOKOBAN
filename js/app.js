@@ -48,7 +48,9 @@ const elMagentBtn = document.querySelector('.magent')
 const elPauseBtn = document.querySelector('.pause-game-btn')
 const elPoint = document.querySelector('.point')
 const elManualBtn = document.querySelector('.btn-manual-game')
-
+const elStatsWarper = document.querySelector('.game-stats-warper')
+const elMuteBtn = document.querySelector('.mute-sound')
+var audio = new Audio('../sound/Monplaisir - Soundtrack.mp3');
 
 
 const GAMER_IMG = '🐶';
@@ -65,8 +67,10 @@ const GOLD_IMG = '⭐️'
 function initGame(row, col) {
 	elWinMsg.style.display = 'none'
 	elGameData.style.display = 'none'
+	elStatsWarper.style.display = 'none'
 	elBtnGame.style.display = 'block'
 	elManualBtn.style.display = 'none'
+	audio.pause()
 	gGamerPos = { i: 2, j: 3 };
 	rows = row
 	cols = col
@@ -74,24 +78,15 @@ function initGame(row, col) {
 	boneCollected = 0
 	stepLeft = 100
 	point = 0
+	elPoint.innerHTML = `Point:${point}`
 	undoMoveArr = []
 	gamerLastPos = []
 	gBoard = buildBoardAuto();
 	renderBoard(gBoard);
 	toggleTargetClass()
 	toggleMagentClass()
+	
 }
-function startGameManually(ev) {
-	ev.preventDefault()
-	elManualBtn.style.display = 'flex'
-	elBtnGame.style.display = 'none'
-	gBoard = buildBoardManually();
-	renderBoard(gBoard);
-	document.querySelectorA(".cell").addEventListener("click", function () {
-		document.getElementById("demo").innerHTML = "Hello World";
-	});
-}
-
 
 
 
@@ -109,8 +104,18 @@ function toggleMagentClass() {
 
 }
 
+function muteSound() {
+	if (audio.volume === 1) {
+	audio.volume = 0 
+	 	elMuteBtn.innerHTML = '🔇'
+	 return
+	}
+	  audio.volume = 1
+	  elMuteBtn.innerHTML = '🔊'
+}
 
 function pauseGame() {
+	audio.play()
 	if (isPasueGame) {
 		elPauseBtn.innerHTML = `Pause`
 		isPasueGame = false
@@ -118,16 +123,19 @@ function pauseGame() {
 
 
 	} else {
+		audio.pause()
+		
 		elPauseBtn.innerHTML = `Continue`
 		isPasueGame = true
 		clearInterval(objectInterval)
 	}
 }
 
-function startGameAuto(ev) {
+function startGame(ev) {
 	ev.preventDefault()
 	elBtnGame.style.display = 'none'
 	elGameData.style.display = 'flex'
+	elStatsWarper.style.display = 'flex'
 	isGameOn = true
 	bounesStepCount = 0
 	spawnNewObject(gBoard)
@@ -136,8 +144,10 @@ function startGameAuto(ev) {
 	elBoneLeftCounter.innerHTML = `Only ${boneCounterLeft} left!`
 	elStepCounter.innerHTML = ` ${stepLeft}/100 step!`
 	elPauseBtn.innerHTML = `Pause`
+	elMuteBtn.innerHTML = '🔊'
 	toggleTargetClass()
-
+	audio.currentTime = 0;
+	audio.play()
 }
 function buildBoardManually() {
 	let board = createMat(rows, cols)

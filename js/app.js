@@ -23,8 +23,7 @@ let isMagnetOn = false
 let isSticky = false
 let isGameOn = null
 let isBoneMagent = null
-let undoMoveArr = []
-let gamerLastPos = []
+
 
 const WALL = 'WALL';
 const FLOOR = 'FLOOR';
@@ -51,7 +50,7 @@ const elPoint = document.querySelector('.point')
 const elManualBtn = document.querySelector('.btn-manual-game')
 const elStatsWarper = document.querySelector('.game-stats-warper')
 const elMuteBtn = document.querySelector('.mute-sound')
-var audio = new Audio('../sound/Monplaisir - Soundtrack.mp3');
+var audio = new Audio(`./sound/Monplaisir - Soundtrack.mp3`);
 
 
 const GAMER_IMG = '🐶';
@@ -82,8 +81,6 @@ function initGame(row, col) {
 	isGameOn = false
 	isBoneMagent = false
 	elPoint.innerHTML = `Point:${point}`
-	undoMoveArr = []
-	gamerLastPos = []
 	gBoard = buildBoard();
 	renderBoard(gBoard);
 	toggleTargetClass()
@@ -317,7 +314,6 @@ function moveTo(i, j) {
 				}
 				if (gBoard[loc.i][loc.j].type === WATER) {
 					let lastLocation = {i:i,j:j}
-					console.log('loc:', lastLocation)
 					targetCell.gameElement = null
 					gBoard[loc.i][loc.j].gameElement = null
 					renderCell(loc, '');
@@ -398,7 +394,6 @@ function activeMagnet() {
 			if (gBoard[i][j].gameElement === BONE) {
 				magentBonePos = { i: i, j: j }
 				let elCell = document.querySelector(`.cell-${i}-${j}`)
-				console.log('elCell:', elCell)
 				elCell.classList.add('flash')
 				elCell.addEventListener("click", function () {
 					selectMagentCell();
